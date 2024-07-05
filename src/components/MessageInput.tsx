@@ -1,11 +1,14 @@
 import clsx from 'clsx';
 import { useMutation, useQuery } from 'convex/react';
-import { KeyboardEvent, useRef, useState } from 'react';
+import { KeyboardEvent, useRef, useState, useCallback } from 'react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { useSendInput } from '../hooks/sendInput';
 import { Player } from '../../convex/aiTown/player';
 import { Conversation } from '../../convex/aiTown/conversation';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { BrowserProvider, Contract, ethers, TransactionReceipt } from 'ethers';
+import { ABI } from '../types/network';
 
 export function MessageInput({
   worldId,
@@ -18,14 +21,41 @@ export function MessageInput({
   humanPlayer: Player;
   conversation: Conversation;
 }) {
+  const { walletProvider } = useWeb3ModalProvider();
   const descriptions = useQuery(api.world.gameDescriptions, { worldId });
-  const humanName = descriptions?.playerDescriptions.find((p) => p.playerId === humanPlayer.id)
-    ?.name;
+  const humanName = descriptions?.playerDescriptions.find(
+    (p) => p.playerId === humanPlayer.id,
+  )?.name;
   const inputRef = useRef<HTMLParagraphElement>(null);
   const inflightUuid = useRef<string | undefined>();
   const writeMessage = useMutation(api.messages.writeMessage);
   const startTyping = useSendInput(engineId, 'startTyping');
   const currentlyTyping = conversation.isTyping;
+
+  const sendMessage = async (input: string) => {
+    try {
+      if (!walletProvider) {
+        return;
+      }
+      const ethersProvider = new BrowserProvider(walletProvider);
+      const signer = await ethersProvider.getSigner();
+      const contract = new Contract('0xfDBF18cea3fF33FA737f03A10879dB1ec76c24F1', ABI, signer);
+      let receipt;
+      if (conversation.numMessages === 0) {
+        const tx = await contract.startChat(
+          conversation.id,
+          'You are a helpful assistant',
+          'Hello!',
+        );
+      } else {
+        const transactionResponse = await contract.addMessage(input, conversation.id);
+        receipt = await transactionResponse.wait();
+        console.log(receipt);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   const onKeyDown = async (e: KeyboardEvent) => {
     e.stopPropagation();
@@ -65,6 +95,7 @@ export function MessageInput({
       messageUuid = currentlyTyping.messageUuid;
     }
     messageUuid = messageUuid || crypto.randomUUID();
+    await sendMessage(text);
     await writeMessage({
       worldId,
       playerId: humanPlayer.id,
@@ -73,6 +104,7 @@ export function MessageInput({
       messageUuid,
     });
   };
+
   return (
     <div className="leading-tight mb-6">
       <div className="flex gap-4">

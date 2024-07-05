@@ -3,11 +3,7 @@ import { internalAction } from '../_generated/server';
 import { WorldMap, serializedWorldMap } from './worldMap';
 import { rememberConversation } from '../agent/memory';
 import { GameId, agentId, conversationId, playerId } from './ids';
-import {
-  continueConversationMessage,
-  leaveConversationMessage,
-  startConversationMessage,
-} from '../agent/conversation';
+import { readResponseFromChain } from '../agent/conversation';
 import { assertNever } from '../util/assertNever';
 import { serializedAgent } from './agent';
 import { ACTIVITIES, ACTIVITY_COOLDOWN, CONVERSATION_COOLDOWN } from '../constants';
@@ -58,27 +54,27 @@ export const agentGenerateMessage = internalAction({
     let completionFn;
     switch (args.type) {
       case 'start':
-        completionFn = startConversationMessage;
+        completionFn = readResponseFromChain;
         break;
       case 'continue':
-        completionFn = continueConversationMessage;
+        completionFn = readResponseFromChain;
         break;
       case 'leave':
-        completionFn = leaveConversationMessage;
+        completionFn = readResponseFromChain;
         break;
       default:
         assertNever(args.type);
     }
-    const completion = await completionFn(
-      ctx,
-      args.worldId,
-      args.conversationId as GameId<'conversations'>,
-      args.playerId as GameId<'players'>,
-      args.otherPlayerId as GameId<'players'>,
-    );
+    const text =
+      (await readResponseFromChain(
+        ctx,
+        args.worldId,
+        args.conversationId as GameId<'conversations'>,
+        args.playerId as GameId<'players'>,
+        args.otherPlayerId as GameId<'players'>,
+      )) || '';
     // TODO: stream in the text instead of reading it all at once.
-    const text = await completion.readAll();
-
+    console.log('Generated message:', text);
     await ctx.runMutation(internal.aiTown.agent.agentSendMessage, {
       worldId: args.worldId,
       conversationId: args.conversationId,
@@ -146,7 +142,9 @@ export const agentDoSomething = internalAction({
         return;
       }
     }
-    const invitee =
+    // no invites for now
+    const invitee = undefined;
+    /*const invitee =
       justLeftConversation || recentlyAttemptedInvite
         ? undefined
         : await ctx.runQuery(internal.aiTown.agent.findConversationCandidate, {
@@ -154,7 +152,7 @@ export const agentDoSomething = internalAction({
             worldId: args.worldId,
             player: args.player,
             otherFreePlayers: args.otherFreePlayers,
-          });
+          });*/
 
     // TODO: We hit a lot of OCC errors on sending inputs in this file. It's
     // easy for them to get scheduled at the same time and line up in time.

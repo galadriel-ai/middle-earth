@@ -55,6 +55,7 @@ import type * as util_minheap from "../util/minheap.js";
 import type * as util_object from "../util/object.js";
 import type * as util_sleep from "../util/sleep.js";
 import type * as util_types from "../util/types.js";
+import type * as util_web3 from "../util/web3.js";
 import type * as util_xxhash from "../util/xxhash.js";
 import type * as world from "../world.js";
 
@@ -108,6 +109,7 @@ declare const fullApi: ApiFromModules<{
   "util/object": typeof util_object;
   "util/sleep": typeof util_sleep;
   "util/types": typeof util_types;
+  "util/web3": typeof util_web3;
   "util/xxhash": typeof util_xxhash;
   world: typeof world;
 }>;

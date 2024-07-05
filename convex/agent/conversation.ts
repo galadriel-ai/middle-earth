@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { Id } from '../_generated/dataModel';
 import { ActionCtx, internalQuery } from '../_generated/server';
 import { LLMMessage, chatCompletion } from '../util/llm';
+import { getAgentResponse } from '../util/web3';
 import * as memory from './memory';
 import { api, internal } from '../_generated/api';
 import * as embeddingsCache from './embeddingsCache';
@@ -68,6 +69,66 @@ export async function startConversationMessage(
   return content;
 }
 
+export async function readResponseFromChain(
+  ctx: ActionCtx,
+  worldId: Id<'worlds'>,
+  conversationId: GameId<'conversations'>,
+  playerId: GameId<'players'>,
+  otherPlayerId: GameId<'players'>,
+) {
+  const prevMessages = await ctx.runQuery(api.messages.listMessages, { worldId, conversationId });
+  return await getAgentResponse(conversationId, prevMessages.length);
+}
+
+export async function leaveConversationMessage(
+  ctx: ActionCtx,
+  worldId: Id<'worlds'>,
+  conversationId: GameId<'conversations'>,
+  playerId: GameId<'players'>,
+  otherPlayerId: GameId<'players'>,
+) {
+  const { player, otherPlayer, conversation, agent, otherAgent } = await ctx.runQuery(
+    selfInternal.queryPromptData,
+    {
+      worldId,
+      playerId,
+      otherPlayerId,
+      conversationId,
+    },
+  );
+  const prompt = [
+    `You are ${player.name}, and you're currently in a conversation with ${otherPlayer.name}.`,
+    `You've decided to leave the question and would like to politely tell them you're leaving the conversation.`,
+  ];
+  prompt.push(...agentPrompts(otherPlayer, agent, otherAgent ?? null));
+  prompt.push(
+    `Below is the current chat history between you and ${otherPlayer.name}.`,
+    `How would you like to tell them that you're leaving? Your response should be brief and within 200 characters.`,
+  );
+  const llmMessages: LLMMessage[] = [
+    {
+      role: 'user',
+      content: prompt.join('\n'),
+    },
+    ...(await previousMessages(
+      ctx,
+      worldId,
+      player,
+      otherPlayer,
+      conversation.id as GameId<'conversations'>,
+    )),
+  ];
+  llmMessages.push({ role: 'user', content: `${player.name}:` });
+
+  const { content } = await chatCompletion({
+    messages: llmMessages,
+    max_tokens: 300,
+    stream: true,
+    stop: stopWords(otherPlayer.name, player.name),
+  });
+  return content;
+}
+
 export async function continueConversationMessage(
   ctx: ActionCtx,
   worldId: Id<'worlds'>,
@@ -102,55 +163,6 @@ export async function continueConversationMessage(
     `DO NOT greet them again. Do NOT use the word "Hey" too often. Your response should be brief and within 200 characters.`,
   );
 
-  const llmMessages: LLMMessage[] = [
-    {
-      role: 'user',
-      content: prompt.join('\n'),
-    },
-    ...(await previousMessages(
-      ctx,
-      worldId,
-      player,
-      otherPlayer,
-      conversation.id as GameId<'conversations'>,
-    )),
-  ];
-  llmMessages.push({ role: 'user', content: `${player.name}:` });
-
-  const { content } = await chatCompletion({
-    messages: llmMessages,
-    max_tokens: 300,
-    stream: true,
-    stop: stopWords(otherPlayer.name, player.name),
-  });
-  return content;
-}
-
-export async function leaveConversationMessage(
-  ctx: ActionCtx,
-  worldId: Id<'worlds'>,
-  conversationId: GameId<'conversations'>,
-  playerId: GameId<'players'>,
-  otherPlayerId: GameId<'players'>,
-) {
-  const { player, otherPlayer, conversation, agent, otherAgent } = await ctx.runQuery(
-    selfInternal.queryPromptData,
-    {
-      worldId,
-      playerId,
-      otherPlayerId,
-      conversationId,
-    },
-  );
-  const prompt = [
-    `You are ${player.name}, and you're currently in a conversation with ${otherPlayer.name}.`,
-    `You've decided to leave the question and would like to politely tell them you're leaving the conversation.`,
-  ];
-  prompt.push(...agentPrompts(otherPlayer, agent, otherAgent ?? null));
-  prompt.push(
-    `Below is the current chat history between you and ${otherPlayer.name}.`,
-    `How would you like to tell them that you're leaving? Your response should be brief and within 200 characters.`,
-  );
   const llmMessages: LLMMessage[] = [
     {
       role: 'user',

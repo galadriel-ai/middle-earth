@@ -91,7 +91,8 @@ export class Agent {
       return;
     }
     // Check to see if we have a conversation we need to remember.
-    if (this.toRemember) {
+    // Note: this is disabled for now.
+    /*if (this.toRemember) {
       // Fire off the action to remember the conversation.
       console.log(`Agent ${this.id} remembering conversation ${this.toRemember}`);
       this.startOperation(game, now, 'agentRememberConversation', {
@@ -102,7 +103,7 @@ export class Agent {
       });
       delete this.toRemember;
       return;
-    }
+    }*/
     if (conversation && member) {
       const [otherPlayerId, otherMember] = [...conversation.participants.entries()].find(
         ([id]) => id !== player.id,

@@ -3,15 +3,17 @@ import { toast } from 'react-toastify';
 import interactImg from '../../../assets/interact.svg';
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-// import { SignInButton } from '@clerk/clerk-react';
 import { ConvexError } from 'convex/values';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useCallback } from 'react';
 import { waitForInput } from '../../hooks/sendInput';
 import { useServerGame } from '../../hooks/serverGame';
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 export default function InteractButton() {
-  // const { isAuthenticated } = useConvexAuth();
+  const { open } = useWeb3Modal();
+  const { address } = useWeb3ModalAccount();
+
   const worldStatus = useQuery(api.world.defaultWorldStatus);
   const worldId = worldStatus?.worldId;
   const game = useServerGame(worldId);
@@ -45,11 +47,7 @@ export default function InteractButton() {
   );
 
   const joinOrLeaveGame = () => {
-    if (
-      !worldId ||
-      // || !isAuthenticated
-      game === undefined
-    ) {
+    if (!worldId || !address || game === undefined) {
       return;
     }
     if (isPlaying) {
@@ -60,13 +58,13 @@ export default function InteractButton() {
       void joinInput(worldId);
     }
   };
-  // if (!isAuthenticated || game === undefined) {
-  //   return (
-  //     <SignInButton>
-  //       <Button imgUrl={interactImg}>Interact</Button>
-  //     </SignInButton>
-  //   );
-  // }
+  if (!address || game === undefined) {
+    return (
+      <Button imgUrl={interactImg} onClick={() => open()}>
+        Connect Wallet
+      </Button>
+    );
+  }
   return (
     <Button imgUrl={interactImg} onClick={joinOrLeaveGame}>
       {isPlaying ? 'Leave' : 'Interact'}
