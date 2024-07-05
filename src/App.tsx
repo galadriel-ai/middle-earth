@@ -28,34 +28,33 @@ export default function Home() {
         ariaHideApp={false}
       >
         <div className="font-body">
-          <h1 className="text-center text-6xl font-bold font-display game-title">Help</h1>
+          <h1 className="text-center text-6xl font-bold font-display game-title">Catadalf's Quest</h1>
           <p>
-            Welcome to AI town. AI town supports both anonymous <i>spectators</i> and logged in{' '}
-            <i>interactivity</i>.
+            Welcome to Catadalf's's Quest. In this enchanted world powered by the decentralized AI of Galadriel, you will interact with AI NPCs that live and breathe in this mystical land.
+          </p>
+          <h2 className="text-4xl mt-4">Mission</h2>
+          <p>
+            Embark on a journey through Middle-earth to find and converse with up to 9 unique characters. Your goal is to collect 9 legendary items from these characters. Only with all items in hand can you proceed to the final challenge and claim your reward.
           </p>
           <h2 className="text-4xl mt-4">Spectating</h2>
           <p>
-            Click and drag to move around the town, and scroll in and out to zoom. You can click on
-            an individual character to view its chat history.
+            Click and drag to move around the town, and scroll in and out to zoom. You can click on an individual character to view their chat history.
           </p>
           <h2 className="text-4xl mt-4">Interactivity</h2>
           <p>
-            If you log in, you can join the simulation and directly talk to different agents! After
-            logging in, click the "Interact" button, and your character will appear somewhere on the
-            map with a highlighted circle underneath you.
+            Press "Connect Wallet" to login, so you can join the simulation and directly talk to different agents! After connecting your wallet, click the "Interact" button, and your character will appear somewhere on the map with a highlighted circle underneath you.
           </p>
           <p className="text-2xl mt-2">Controls:</p>
           <p className="mt-4">Click to navigate around.</p>
           <p className="mt-4">
-            To talk to an agent, click on them and then click "Start conversation," which will ask
-            them to start walking towards you. Once they're nearby, the conversation will start, and
-            you can speak to each other. You can leave at any time by closing the conversation pane
-            or moving away. They may propose a conversation to you - you'll see a button to accept
-            in the messages panel.
+            To talk to an agent, click on them and then click "Start conversation," which will ask them to start walking towards you. Once they're nearby, the conversation will start, and you can speak to each other. You can leave at any time by closing the conversation pane or moving away. They may propose a conversation to you - you'll see a button to accept in the messages panel.
           </p>
-          <p className="mt-4">
-            AI town only supports {MAX_HUMAN_PLAYERS} humans at a time. If you're idle for five
-            minutes, you'll be automatically removed from the simulation.
+          <h2 className="text-4xl mt-4">Lore</h2>
+          <p>
+            The land of Catadalf's Quest is filled with characters from Middle-earth. From the noble Elf Legolas, to the wise Gandalf where each character has a unique item tied to the decentralized world of Galadriel.
+          </p>
+          <p>
+            Your adventure will take you through the once humble Shire of Galadriel as you seek to collect ancient relics to prepare yourself. Each interaction brings you closer to the final challenge, where you must battle the ultimate centralized evil to obtain the Decentralization Crown and restore peace and harmony to the Shire.
           </p>
         </div>
       </ReactModal>
