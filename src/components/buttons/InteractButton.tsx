@@ -17,7 +17,7 @@ export default function InteractButton() {
   const worldStatus = useQuery(api.world.defaultWorldStatus);
   const worldId = worldStatus?.worldId;
   const game = useServerGame(worldId);
-  const humanTokenIdentifier = useQuery(api.world.userStatus, worldId ? { worldId } : 'skip');
+  const humanTokenIdentifier = address ? address : 'skip';
   const userPlayerId =
     game && [...game.world.players.values()].find((p) => p.human === humanTokenIdentifier)?.id;
   const join = useMutation(api.world.joinWorld);
@@ -26,10 +26,10 @@ export default function InteractButton() {
 
   const convex = useConvex();
   const joinInput = useCallback(
-    async (worldId: Id<'worlds'>) => {
+    async (worldId: Id<'worlds'>, address: string) => {
       let inputId;
       try {
-        inputId = await join({ worldId });
+        inputId = await join({ worldId, address });
       } catch (e: any) {
         if (e instanceof ConvexError) {
           toast.error(e.data);
@@ -55,7 +55,7 @@ export default function InteractButton() {
       void leave({ worldId });
     } else {
       console.log(`Joining game`);
-      void joinInput(worldId);
+      void joinInput(worldId, address);
     }
   };
   if (!address || game === undefined) {

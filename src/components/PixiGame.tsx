@@ -14,6 +14,7 @@ import { DebugPath } from './DebugPath.tsx';
 import { PositionIndicator } from './PositionIndicator.tsx';
 import { SHOW_DEBUG_UI } from './Game.tsx';
 import { ServerGame } from '../hooks/serverGame.ts';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 export const PixiGame = (props: {
   worldId: Id<'worlds'>;
@@ -28,7 +29,8 @@ export const PixiGame = (props: {
   const pixiApp = useApp();
   const viewportRef = useRef<Viewport | undefined>();
 
-  const humanTokenIdentifier = useQuery(api.world.userStatus, { worldId: props.worldId }) ?? null;
+  const { address } = useWeb3ModalAccount();
+  const humanTokenIdentifier = address ?? null;
   const humanPlayerId = [...props.game.world.players.values()].find(
     (p) => p.human === humanTokenIdentifier,
   )?.id;

@@ -111,6 +111,7 @@ export const userStatus = query({
 export const joinWorld = mutation({
   args: {
     worldId: v.id('worlds'),
+    address: v.string(),
   },
   handler: async (ctx, args) => {
     // const identity = await ctx.auth.getUserIdentity();
@@ -119,7 +120,7 @@ export const joinWorld = mutation({
     // }
     // const name =
     //   identity.givenName || identity.nickname || (identity.email && identity.email.split('@')[0]);
-    const name = DEFAULT_NAME;
+    const name = args.address;
 
     // if (!name) {
     //   throw new ConvexError(`Missing name on ${JSON.stringify(identity)}`);
@@ -132,9 +133,9 @@ export const joinWorld = mutation({
     return await insertInput(ctx, world._id, 'join', {
       name,
       character: characters[Math.floor(Math.random() * characters.length)].name,
-      description: `${DEFAULT_NAME} is a human player`,
+      description: `${name} is a human player`,
       // description: `${identity.givenName} is a human player`,
-      tokenIdentifier: DEFAULT_NAME,
+      tokenIdentifier: name,
     });
   },
 });
