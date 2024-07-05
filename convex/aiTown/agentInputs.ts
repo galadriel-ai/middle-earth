@@ -128,6 +128,8 @@ export const agentInputs = {
         description.name,
         description.character,
         description.identity,
+        undefined,
+        description.contract,
       );
       const agentId = game.allocId('agents');
       game.world.agents.set(
@@ -147,6 +149,7 @@ export const agentInputs = {
           agentId: agentId,
           identity: description.identity,
           plan: description.plan,
+          contract: description.contract,
         }),
       );
       return { agentId };

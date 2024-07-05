@@ -26,6 +26,9 @@ export function MessageInput({
   const humanName = descriptions?.playerDescriptions.find(
     (p) => p.playerId === humanPlayer.id,
   )?.name;
+  const contractAddress = descriptions?.playerDescriptions.find(
+    (p) => p.contract != undefined,
+  )?.contract;
   const inputRef = useRef<HTMLParagraphElement>(null);
   const inflightUuid = useRef<string | undefined>();
   const writeMessage = useMutation(api.messages.writeMessage);
@@ -37,15 +40,17 @@ export function MessageInput({
       if (!walletProvider) {
         return;
       }
+      if (!contractAddress) {
+        return;
+      }
       const ethersProvider = new BrowserProvider(walletProvider);
       const signer = await ethersProvider.getSigner();
-      const contract = new Contract('0xfDBF18cea3fF33FA737f03A10879dB1ec76c24F1', ABI, signer);
+      const contract = new Contract(contractAddress, ABI, signer);
       let receipt;
       if (conversation.numMessages === 0) {
         const tx = await contract.startChat(conversation.id, 'You are a helpful assistant', input);
       } else {
         const transactionResponse = await contract.addMessage(input, conversation.id);
-        receipt = await transactionResponse.wait();
         console.log(receipt);
       }
     } catch (error: any) {

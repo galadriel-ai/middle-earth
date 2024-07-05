@@ -172,6 +172,7 @@ export class Player {
     character: string,
     description: string,
     tokenIdentifier?: string,
+    contract?: string,
   ) {
     if (tokenIdentifier) {
       let numHumans = 0;
@@ -231,6 +232,7 @@ export class Player {
         character,
         description,
         name,
+        contract,
       }),
     );
     game.descriptionsModified = true;
