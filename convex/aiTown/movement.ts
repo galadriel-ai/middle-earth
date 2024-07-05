@@ -94,11 +94,12 @@ export function findRoute(game: Game, now: number, player: Player, destination: 
         continue;
       }
       const remaining = manhattanDistance(position, destination);
+      const speed = player.human ? movementSpeed : 1;
       const path = {
         position,
         facing,
         // Movement speed is in tiles per second.
-        t: current.t + (segmentLength / movementSpeed) * 1000,
+        t: current.t + (segmentLength / speed) * 1000,
         length,
         cost: length + remaining,
         prev: current,
