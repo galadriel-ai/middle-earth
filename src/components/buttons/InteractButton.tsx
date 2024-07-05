@@ -52,7 +52,7 @@ export default function InteractButton() {
     }
     if (isPlaying) {
       console.log(`Leaving game for player ${userPlayerId}`);
-      void leave({ worldId });
+      void leave({ worldId, address });
     } else {
       console.log(`Joining game`);
       void joinInput(worldId, address);

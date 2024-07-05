@@ -53,30 +53,29 @@ export const agentGenerateMessage = internalAction({
   },
   handler: async (ctx, args) => {
     let completionFn;
+    var text = '';
     switch (args.type) {
       case 'start':
-        completionFn = readResponseFromChain;
+        text = 'Start of the conversation';
         break;
       case 'continue':
-        completionFn = readResponseFromChain;
+        text =
+          (await readResponseFromChain(
+            ctx,
+            args.worldId,
+            args.conversationId as GameId<'conversations'>,
+            args.playerId as GameId<'players'>,
+            args.otherPlayerId as GameId<'players'>,
+            args.contract,
+          )) || '';
         break;
       case 'leave':
-        completionFn = readResponseFromChain;
+        text = 'End of the conversation';
         break;
       default:
         assertNever(args.type);
     }
-    const text =
-      (await readResponseFromChain(
-        ctx,
-        args.worldId,
-        args.conversationId as GameId<'conversations'>,
-        args.playerId as GameId<'players'>,
-        args.otherPlayerId as GameId<'players'>,
-        args.contract,
-      )) || '';
-    // TODO: stream in the text instead of reading it all at once.
-    console.log('Generated message:', text);
+    console.log(`Generated message for ${args.type}:`, text);
     await ctx.runMutation(internal.aiTown.agent.agentSendMessage, {
       worldId: args.worldId,
       conversationId: args.conversationId,

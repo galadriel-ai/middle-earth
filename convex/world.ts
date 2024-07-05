@@ -143,6 +143,7 @@ export const joinWorld = mutation({
 export const leaveWorld = mutation({
   args: {
     worldId: v.id('worlds'),
+    address: v.string(),
   },
   handler: async (ctx, args) => {
     // const identity = await ctx.auth.getUserIdentity();
@@ -154,8 +155,7 @@ export const leaveWorld = mutation({
     if (!world) {
       throw new Error(`Invalid world ID: ${args.worldId}`);
     }
-    // const existingPlayer = world.players.find((p) => p.human === tokenIdentifier);
-    const existingPlayer = world.players.find((p) => p.human === DEFAULT_NAME);
+    const existingPlayer = world.players.find((p) => p.human === args.address);
     if (!existingPlayer) {
       return;
     }
