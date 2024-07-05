@@ -47,6 +47,8 @@ export async function getAgentResponse(
   while (Date.now() - startTime < timeout) {
     const response = await checkMessages();
     if (response) {
+      console.log("RESPONSE")
+      console.log(response)
       return response;
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));

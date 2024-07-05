@@ -8,7 +8,7 @@ import { Player } from '../../convex/aiTown/player';
 import { Conversation } from '../../convex/aiTown/conversation';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { BrowserProvider, Contract, ethers, TransactionReceipt } from 'ethers';
-import { ABI } from '../types/network';
+import {ABI} from "../../convex/constants.ts";
 
 export function MessageInput({
   worldId,
@@ -48,7 +48,7 @@ export function MessageInput({
       const contract = new Contract(contractAddress, ABI, signer);
       let receipt;
       if (conversation.numMessages === 0) {
-        const tx = await contract.startChat(conversation.id, 'You are a helpful assistant', input);
+        const tx = await contract.startChat(conversation.id, input);
       } else {
         const transactionResponse = await contract.addMessage(input, conversation.id);
         console.log(receipt);
