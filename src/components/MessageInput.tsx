@@ -42,11 +42,7 @@ export function MessageInput({
       const contract = new Contract('0xfDBF18cea3fF33FA737f03A10879dB1ec76c24F1', ABI, signer);
       let receipt;
       if (conversation.numMessages === 0) {
-        const tx = await contract.startChat(
-          conversation.id,
-          'You are a helpful assistant',
-          'Hello!',
-        );
+        const tx = await contract.startChat(conversation.id, 'You are a helpful assistant', input);
       } else {
         const transactionResponse = await contract.addMessage(input, conversation.id);
         receipt = await transactionResponse.wait();

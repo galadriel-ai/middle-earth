@@ -66,10 +66,10 @@ export default function PlayerDetails({
     return null;
   }
   const isMe = humanPlayer && player.id === humanPlayer.id;
-  const canInvite = !isMe && !playerConversation && humanPlayer && !humanConversation;
+  // disable human to human conversations
+  const canInvite = !isMe && !playerConversation && /*humanPlayer &&*/ !humanConversation;
   const sameConversation =
     !isMe &&
-    humanPlayer &&
     humanConversation &&
     playerConversation &&
     humanConversation.id === playerConversation.id;
