@@ -11,6 +11,7 @@ export interface ChatMessage {
 export type ChatRole = 'assistant' | 'user' | 'system';
 
 export async function getAgentResponse(
+  contractAddress: string,
   conversationId: GameId<'conversations'>,
   conversationLength: number,
   timeout: number = 30000, // 30 seconds timeout by default
@@ -23,7 +24,7 @@ export async function getAgentResponse(
     name: 'Galadriel Devnet',
   };
   const provider = new ethers.JsonRpcProvider('https://devnet.galadriel.com', network);
-  const contract = new Contract(process.env.CONTRACT_ADDRESS, ABI, provider);
+  const contract = new Contract(contractAddress, ABI, provider);
 
   const startTime = Date.now();
 

@@ -173,6 +173,7 @@ export class Agent {
             // Grab the lock on the conversation and send a "start" message.
             console.log(`${player.id} initiating conversation with ${otherPlayer.id}.`);
             const messageUuid = crypto.randomUUID();
+            const contract = game.agentDescriptions.get(this.id)!.contract;
             conversation.setIsTyping(now, player, messageUuid);
             this.startOperation(game, now, 'agentGenerateMessage', {
               worldId: game.worldId,
@@ -182,6 +183,7 @@ export class Agent {
               otherPlayerId: otherPlayer.id,
               messageUuid,
               type: 'start',
+              contract: contract,
             });
             return;
           } else {
@@ -194,6 +196,7 @@ export class Agent {
         if (tooLongDeadline < now || conversation.numMessages > MAX_CONVERSATION_MESSAGES) {
           console.log(`${player.id} leaving conversation with ${otherPlayer.id}.`);
           const messageUuid = crypto.randomUUID();
+          const contract = game.agentDescriptions.get(this.id)!.contract;
           conversation.setIsTyping(now, player, messageUuid);
           this.startOperation(game, now, 'agentGenerateMessage', {
             worldId: game.worldId,
@@ -203,6 +206,7 @@ export class Agent {
             otherPlayerId: otherPlayer.id,
             messageUuid,
             type: 'leave',
+            contract: contract,
           });
           return;
         }
@@ -221,6 +225,7 @@ export class Agent {
         // Grab the lock and send a message!
         console.log(`${player.id} continuing conversation with ${otherPlayer.id}.`);
         const messageUuid = crypto.randomUUID();
+        const contract = game.agentDescriptions.get(this.id)!.contract;
         conversation.setIsTyping(now, player, messageUuid);
         this.startOperation(game, now, 'agentGenerateMessage', {
           worldId: game.worldId,
@@ -230,6 +235,7 @@ export class Agent {
           otherPlayerId: otherPlayer.id,
           messageUuid,
           type: 'continue',
+          contract: contract,
         });
         return;
       }

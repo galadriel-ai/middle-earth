@@ -49,6 +49,7 @@ export const agentGenerateMessage = internalAction({
     operationId: v.string(),
     type: v.union(v.literal('start'), v.literal('continue'), v.literal('leave')),
     messageUuid: v.string(),
+    contract: v.string(),
   },
   handler: async (ctx, args) => {
     let completionFn;
@@ -72,6 +73,7 @@ export const agentGenerateMessage = internalAction({
         args.conversationId as GameId<'conversations'>,
         args.playerId as GameId<'players'>,
         args.otherPlayerId as GameId<'players'>,
+        args.contract,
       )) || '';
     // TODO: stream in the text instead of reading it all at once.
     console.log('Generated message:', text);

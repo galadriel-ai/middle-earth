@@ -75,9 +75,10 @@ export async function readResponseFromChain(
   conversationId: GameId<'conversations'>,
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
+  contractAddress: string,
 ) {
   const prevMessages = await ctx.runQuery(api.messages.listMessages, { worldId, conversationId });
-  return await getAgentResponse(conversationId, prevMessages.length);
+  return await getAgentResponse(contractAddress, conversationId, prevMessages.length);
 }
 
 export async function leaveConversationMessage(
