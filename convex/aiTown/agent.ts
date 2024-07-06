@@ -167,9 +167,9 @@ export class Agent {
         }
         if (!conversation.lastMessage) {
           const isInitiator = conversation.creator === player.id;
-          const awkwardDeadline = started + AWKWARD_CONVERSATION_TIMEOUT;
+          // const awkwardDeadline = started + AWKWARD_CONVERSATION_TIMEOUT;
           // Send the first message if we're the initiator or if we've been waiting for too long.
-          if (isInitiator || awkwardDeadline < now) {
+          if (isInitiator) {
             // Grab the lock on the conversation and send a "start" message.
             console.log(`${player.id} initiating conversation with ${otherPlayer.id}.`);
             const messageUuid = crypto.randomUUID();
